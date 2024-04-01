@@ -23,7 +23,7 @@ async function vleTransactionPasswordHandler(request: FastifyRequest, response: 
       throw new Error(`Insufficient balance, you need at least ${requiredBalance}. Please add ${shortfall} to your wallet.`);
     }
 
-    const vle = await Vle.findOne({ _id: id });
+    const vle = await Vle.findOne({ _id: vleId });
 
     if (!vle) {
       throw new Error("Something went wrong please try again!");
