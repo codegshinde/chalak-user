@@ -10,10 +10,10 @@ import { Pocket } from "../../models/Pocket";
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */
 async function pocketHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-  const authenticatedUser = request.user as UserToken;
+  const { id } = request.user as UserToken;
   try {
     // Check if pocket already exists for the user
-    const existingPocket = await Pocket.findOne({ pocketId: authenticatedUser.id });
+    const existingPocket = await Pocket.findOne({ userId: id });
 
     if (existingPocket) {
       throw new Error("Pocket already created for this user.");
@@ -21,16 +21,16 @@ async function pocketHandler(request: FastifyRequest, reply: FastifyReply): Prom
 
     // Create a new pocket document
     const newPocket = new Pocket({
-      pocketId: authenticatedUser.id,
+      userId: id,
     });
+    await newPocket.save();
 
-    // Save the pocket
-    const savedPocket = await newPocket.save();
-
+    // Send response with pocket details
     reply.send({
-      pocketDetails: savedPocket,
+      pocketDetails: newPocket,
     });
   } catch (error) {
+    // Forward error to Fastify for handling
     throw error;
   }
 }

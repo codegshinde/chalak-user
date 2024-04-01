@@ -1,31 +1,20 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
-import { createTransactionRouteOptions } from "../controller/handlers/createTransctionHandler";
-import { getVleCredentialsRouteOptions } from "../controller/handlers/getVleCredentialsHandler";
-
-import { getSubscriptionsRouteOptions } from "../controller/handlers/getSubscriptionsHandler";
-import { pocketBalanceRouteOptions } from "../controller/handlers/pocketBalanceHandler";
+import fastifyPlugin from "fastify-plugin";
+import { createUserTransctionRouteOptions } from "../controller/handlers/createTransctionHandler";
+import { createUpiTransactionRouteOptions } from "../controller/handlers/createUpiTransactionHandler";
 import { pocketRouteOptions } from "../controller/handlers/pocketHandler";
-import { profileRouteOptions } from "../controller/handlers/profileHandler";
 import { subscriptionsRouteOptions } from "../controller/handlers/subscriptionsHandler";
-import { updateTransactionRouteOptions } from "../controller/handlers/updateTransctionHandler";
+import { upiUpdatePaymentRouteOptions } from "../controller/handlers/upi/upiUpdatePaymentHandler";
+import { vleTransactionPasswordRouteOptions } from "../controller/handlers/vleTransactionPasswordHandler";
 
 async function postRoute(fastify: FastifyInstance) {
-  fastify.get("/profile", profileRouteOptions);
+  fastify.post("/subscriptions/create", subscriptionsRouteOptions);
+  fastify.post("/pocket/create", pocketRouteOptions);
+  fastify.post("/transactions/new", createUserTransctionRouteOptions);
+  fastify.post("/transactions/upi", createUpiTransactionRouteOptions);
 
-  fastify.get("/vle-credentials", getVleCredentialsRouteOptions);
-
-  fastify.get("/pocket/balance", pocketBalanceRouteOptions);
-
-  fastify.post("/subscriptions", subscriptionsRouteOptions);
-
-  fastify.get("/subscriptions", getSubscriptionsRouteOptions);
-
-  fastify.post("/pocket/:id", pocketRouteOptions);
-
-  fastify.post("/transactions/new", createTransactionRouteOptions);
-
-  fastify.put("/transactions/update/:orderId", updateTransactionRouteOptions);
+  fastify.post("/transactions/password", vleTransactionPasswordRouteOptions);
+  fastify.post("/notification/upi", upiUpdatePaymentRouteOptions);
 }
 
-export default fp(postRoute);
+export default fastifyPlugin(postRoute);

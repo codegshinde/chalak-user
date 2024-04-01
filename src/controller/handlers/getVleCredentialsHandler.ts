@@ -1,5 +1,7 @@
 import { FastifyReply, FastifyRequest, RouteShorthandOptionsWithHandler } from "fastify";
+import { UserToken } from "../../global";
 import { Pocket } from "../../models/Pocket";
+import { User } from "../../models/User";
 import { Vle } from "../../models/Vle";
 
 /**
@@ -10,20 +12,22 @@ import { Vle } from "../../models/Vle";
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */
 async function getVleCredentialsHandler(request: FastifyRequest, response: FastifyReply): Promise<void> {
-  const { id } = request.user as { id: string };
+  const { id } = request.user as UserToken;
   try {
     // Find the user by userId, lean() for a plain JavaScript object
-    const user = await request.getDocument({ _id: id });
+    const user = await User.findOne({ _id: id });
+
     if (!user) {
       throw new Error("Invalid userId. User not found.");
     }
 
-    const pocket = await Pocket.findOne({ pocketId: user._id });
+    const pocket = await Pocket.findOne({ userId: id });
+
     if (!pocket) {
       throw new Error("Invalid Pocket. Please Create Pocket");
     }
 
-    if (pocket.balance < 200) {
+    if (pocket.balance < 100) {
       throw new Error("Balance is below 100, please add balance.");
     }
 
@@ -44,6 +48,7 @@ async function getVleCredentialsHandler(request: FastifyRequest, response: Fasti
     // const randomVle = vleIdPassword[0];
 
     const password = btoa(vle.password);
+
     response.send({
       username: vle.userId,
       password: password,

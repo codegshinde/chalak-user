@@ -10,12 +10,12 @@ import { Subscription } from "../../models/Subscription";
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */
 async function getSubscriptionsHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-  const authenticatedUser = request.user as UserToken;
+  const { id } = request.user as UserToken;
   const body = request.user as { plan: string };
   try {
     // Check if pocket already exists for the user
     const subscriptions = await Subscription.findOne({
-      userId: authenticatedUser.id,
+      userId: id,
       endDate: { $gte: new Date() },
     });
 

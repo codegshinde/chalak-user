@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
+import getRoutes from "./getRoutes";
+import patchRoutes from "./patchRoutes";
 import postRoute from "./postRoute";
 
 async function registerRoutes(fastify: FastifyInstance) {
+  await fastify.register(getRoutes);
   await fastify.register(postRoute);
+  await fastify.register(patchRoutes);
 }
 
-export default fp(registerRoutes);
+export default registerRoutes;

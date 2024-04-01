@@ -1,6 +1,6 @@
 import fastifyCors from "@fastify/cors";
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
+import fastifyPlugin from "fastify-plugin";
 import authenticate from "../middleware/authenticate";
 import recharge from "../middleware/recharge";
 import databasePlugin from "./databasePlugin";
@@ -30,4 +30,4 @@ async function registerPlugins(fastify: FastifyInstance): Promise<void> {
 }
 
 // Export the plugin registration function as a Fastify plugin
-export default fp(registerPlugins);
+export default fastifyPlugin(registerPlugins);

@@ -11,13 +11,17 @@ import { Subscription } from "../models/Subscription";
  */
 async function recharge(fastify: FastifyInstance): Promise<void> {
   // Define public routes that do not require authentication
-  const publicRoutes = ["/subscriptions"];
+  const publicRoutes = ["/user/subscriptions/create"];
   // Add preHandler hook to verify JWT for protected routes
   fastify.addHook("preHandler", async (request: FastifyRequest) => {
     try {
       const user = request.user as UserToken;
       // Skip authentication for public routes
-      if (publicRoutes.includes(request.routeOptions.url)) {
+      if (
+        request.routeOptions &&
+        request.routeOptions.url &&
+        publicRoutes.includes(request.routeOptions.url)
+      ) {
         return;
       }
 
@@ -28,7 +32,7 @@ async function recharge(fastify: FastifyInstance): Promise<void> {
 
       // Throw an error if auth headers are not provided
       if (!subscriptionCheck) {
-        throw new Error("Subscription is not active");
+        throw new Error("Subscription is not active!");
       }
     } catch (error) {
       // Throw an error if JWT verification fails

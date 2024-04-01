@@ -9,14 +9,20 @@ import fp from "fastify-plugin";
  */
 async function authenticate(fastify: FastifyInstance): Promise<void> {
   // Define public routes that do not require authentication
-  const publicRoutes = ["/login", "/register", "/cdn/*"];
+  const publicRoutes = ["/login"];
+
   // Add preHandler hook to verify JWT for protected routes
   fastify.addHook("preHandler", async (request: FastifyRequest) => {
     try {
       // Extract the authorization header
       const authHeader = request.headers.authorization;
+
       // Skip authentication for public routes
-      if (publicRoutes.includes(request.routeOptions.url)) {
+      if (
+        request.routeOptions &&
+        request.routeOptions.url &&
+        publicRoutes.includes(request.routeOptions.url)
+      ) {
         return;
       }
 
@@ -33,7 +39,7 @@ async function authenticate(fastify: FastifyInstance): Promise<void> {
       request.user = decoded;
     } catch (error) {
       // Throw an error if JWT verification fails
-      throw error;
+      throw new Error("Authentication failed");
     }
   });
 }

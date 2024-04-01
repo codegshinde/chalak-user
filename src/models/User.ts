@@ -17,8 +17,6 @@ const addressSchema = new Schema<Address>({
 
 interface UserTypes {
   _id: ObjectId;
-  isSubscribe: boolean;
-  isPocket: "active" | "inactive" | "setup";
   firstName: string;
   lastName: string;
   isLive: boolean;
@@ -33,8 +31,6 @@ interface UserTypes {
 // Define the User schema using the User interface
 const UserSchema = new Schema<UserTypes>(
   {
-    isSubscribe: { type: Boolean, required: true, default: false },
-    isPocket: { type: String, required: false, default: "setup" },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     userId: { type: String, required: true },

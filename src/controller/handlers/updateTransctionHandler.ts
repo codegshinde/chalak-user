@@ -4,46 +4,43 @@ import { Pocket, PocketTypes } from "../../models/Pocket";
 import { Transaction } from "../../models/Transaction";
 import { updateTransactionRouteSchema } from "../schema/updateTransactionSchema";
 
+/**
+ * Handles the request to update a transaction status.
+ *
+ * @param {FastifyRequest} request - The Fastify request object.
+ * @param {FastifyReply} response - The Fastify reply object.
+ * @returns {Promise<void>} A promise that resolves once the handler is complete.
+ */
+interface TransactionTypes {
+  orderId: string;
+  status: "pending" | "success" | "failed";
+}
 async function updateTransactionHandler(request: FastifyRequest, response: FastifyReply): Promise<void> {
-  const { orderId } = request.params as { orderId: string };
-  const { status } = request.body as { status: "pending" | "success" | "failed" };
-
+  const { status, orderId } = request.body as TransactionTypes;
   try {
-    // Check if the transaction with the provided order ID already exists
+    // Check if a transaction with the provided order ID already exists
     const existingTransaction = await Transaction.findOne({
       orderId,
       status: { $in: ["success", "failed"] },
     });
+
     // If a transaction with the same order ID already exists, return an error response
     if (existingTransaction) {
-      response.status(400).send({ error: "Transaction with the provided order ID already exists." });
-      return;
+      throw new Error("Transaction with the provided order ID already exists.");
     }
 
-    if (status === "failed") {
+    // Update transaction status based on the provided status
+    if (status === "failed" || status === "success") {
       const updatedTransaction = await Transaction.findOneAndUpdate({ orderId }, { status }, { new: true });
 
       if (updatedTransaction) {
-        response.send({
-          message: "Payment failed! Please try again.",
-          orderDetails: updatedTransaction,
-        });
-      }
-
-      return;
-    }
-
-    if (status === "success") {
-      const updatedTransaction = await Transaction.findOneAndUpdate({ orderId }, { status }, { new: true });
-
-      if (updatedTransaction) {
+        // Handle different scenarios based on transaction type
         let message = "";
-        if (updatedTransaction.type === "debit") {
-          await updateWalletBalance(updatedTransaction.amount, updatedTransaction.userId, "debit");
-          message = "Application payment done!";
-        } else if (updatedTransaction.type === "credit") {
-          await updateWalletBalance(updatedTransaction.amount, updatedTransaction.userId, "credit");
-          message = "Balance added successfully!";
+        if (status === "failed") {
+          message = "Payment failed! Please try again.";
+        } else if (status === "success") {
+          message = updatedTransaction.type === "debit" ? "Application payment done!" : "Balance added successfully!";
+          await updateWalletBalance(updatedTransaction.amount, updatedTransaction.userId, updatedTransaction.type);
         }
 
         response.send({
@@ -53,10 +50,19 @@ async function updateTransactionHandler(request: FastifyRequest, response: Fasti
       }
     }
   } catch (error) {
-    response.status(500).send({ error: "Internal Server Error" });
+    // Forward any caught errors to Fastify for handling
+    throw new Error("Internal Server Error");
   }
 }
 
+/**
+ * Updates the wallet balance based on the transaction amount and type.
+ *
+ * @param {number} amount - The transaction amount.
+ * @param {Schema.Types.ObjectId} userId - The user ID associated with the transaction.
+ * @param {"debit" | "credit"} type - The type of transaction.
+ * @returns {Promise<PocketTypes | null>} A promise that resolves with the updated pocket document.
+ */
 async function updateWalletBalance(
   amount: number,
   userId: Schema.Types.ObjectId,
@@ -66,25 +72,19 @@ async function updateWalletBalance(
     // Round the amount to two decimal places
     const roundedAmount = Math.round(amount * 100) / 100;
 
-    let updateQuery: any = {};
-    if (type === "debit") {
-      // Deduct balance for debit
-      updateQuery = { $inc: { balance: -roundedAmount } };
-    } else if (type === "credit") {
-      // Add balance for credit
-      updateQuery = { $inc: { balance: roundedAmount } };
-    }
+    // Determine the update query based on the transaction type
+    const updateQuery = type === "debit" ? { $inc: { balance: -roundedAmount } } : { $inc: { balance: roundedAmount } };
 
     // Update the pocket document with the new balance
-    const updatedPocket = await Pocket.findOneAndUpdate({ pocketId: userId }, updateQuery, { new: true });
+    const updatedPocket = await Pocket.findOneAndUpdate({ userId }, updateQuery, { new: true });
 
     return updatedPocket;
   } catch (error) {
-    console.error("Error updating wallet balance:", error);
-    return null;
+    throw new Error("Error updating wallet balance");
   }
 }
 
+// Route options for updating transaction status
 export const updateTransactionRouteOptions: RouteShorthandOptionsWithHandler = {
   schema: updateTransactionRouteSchema,
   handler: updateTransactionHandler,

@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
+import registerPlugins from "./plugins/registerPlugins";
 import registerRoutes from "./routes/registerRoutes";
 import registerUtils from "./utils/registerUtils";
-import registerPlugins from "./plugins/registerPlugins";
 
 // Configuration options for starting the Fastify server
 interface ListenOptions {
@@ -43,7 +43,7 @@ function createApp(fastify: FastifyInstance): CreateApp {
    *
    * @param fastify - An instance of the Fastify framework.
    */
-  fastify.register(registerRoutes, { fastify });
+  fastify.register(registerRoutes, { prefix: "/user/"});
 
   // Register utilities
   /**

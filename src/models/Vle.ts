@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 
 interface VleTypes {
   userId: string;
+  balance: number;
   password: string;
   district: string;
   subDistrict: string;
@@ -14,6 +15,7 @@ interface VleTypes {
 const vleSchema = new Schema<VleTypes>(
   {
     userId: { type: String, required: true },
+    balance: { type: Number, required: false },
     password: { type: String, required: true },
     district: { type: String, required: true },
     subDistrict: { type: String, required: true },

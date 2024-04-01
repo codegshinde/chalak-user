@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
+import fastifyPlugin from "fastify-plugin";
 import mongoose from "mongoose";
 
 async function connectToDatabase() {
@@ -21,4 +21,4 @@ const databasePlugin = async (fastify: FastifyInstance) => {
   fastify.addHook("onClose", disconnectDatabase);
 };
 
-export default fp(databasePlugin);
+export default fastifyPlugin(databasePlugin);

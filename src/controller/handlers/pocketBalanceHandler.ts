@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest, RouteShorthandOptionsWithHandler } from "fastify";
 import { UserToken } from "../../global";
+import { Pocket } from "../../models/Pocket";
 
 /**
  * Handles the request to create a new pocket.
@@ -9,10 +10,10 @@ import { UserToken } from "../../global";
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */
 async function pocketBalanceHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-  const authenticatedUser = request.user as UserToken;
+  const { id } = request.user as UserToken;
   try {
     // Check if pocket already exists for the user
-    const existingPocket = await request.getD;
+    const existingPocket = await Pocket.findOne({ userId: id });
 
     if (!existingPocket) {
       throw new Error("Pocket Not Found Please Create Pocket.");

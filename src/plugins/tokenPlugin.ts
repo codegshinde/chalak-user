@@ -1,6 +1,6 @@
 import fastifyJwt from "@fastify/jwt";
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
+import fastifyPlugin from "fastify-plugin";
 
 async function tokenPlugin(fastify: FastifyInstance) {
   fastify.register(fastifyJwt, {
@@ -11,4 +11,4 @@ async function tokenPlugin(fastify: FastifyInstance) {
   });
 }
 
-export default fp(tokenPlugin);
+export default fastifyPlugin(tokenPlugin);

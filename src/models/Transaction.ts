@@ -7,6 +7,7 @@ interface TransactionTypes {
   serviceId?: string;
   amount: number;
   mode?: string;
+  vleId?: string;
   type: "debit" | "credit";
   portalFee: number;
 }
