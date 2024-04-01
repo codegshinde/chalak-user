@@ -34,9 +34,7 @@ async function getVleCredentialsHandler(request: FastifyRequest, response: Fasti
     const vle = await Vle.findOne({ subDistrict: user.address[0].subDistrict });
 
     if (!vle) {
-      throw new Error(
-        "Vle not found in your sub-district. We apologize for the inconvenience. Please contact support for further assistance."
-      );
+      throw new Error("Vle not found in your sub-district. We apologize for the inconvenience. Please contact support for further assistance.");
     }
 
     // const vleIdPassword = await Vle.aggregate([
@@ -50,6 +48,7 @@ async function getVleCredentialsHandler(request: FastifyRequest, response: Fasti
     const password = btoa(vle.password);
 
     response.send({
+      id: vle._id,
       username: vle.userId,
       password: password,
     });

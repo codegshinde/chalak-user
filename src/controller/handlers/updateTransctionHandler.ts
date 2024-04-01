@@ -11,12 +11,12 @@ import { updateTransactionRouteSchema } from "../schema/updateTransactionSchema"
  * @param {FastifyReply} response - The Fastify reply object.
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */
-interface TransactionTypes {
+interface RequestBody {
   orderId: string;
   status: "pending" | "success" | "failed";
 }
 async function updateTransactionHandler(request: FastifyRequest, response: FastifyReply): Promise<void> {
-  const { status, orderId } = request.body as TransactionTypes;
+  const { status, orderId } = request.body as RequestBody;
   try {
     // Check if a transaction with the provided order ID already exists
     const existingTransaction = await Transaction.findOne({
