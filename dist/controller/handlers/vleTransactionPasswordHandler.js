@@ -28,7 +28,7 @@ async function vleTransactionPasswordHandler(request, response) {
             throw new Error(`Insufficient balance, you need at least ${requiredBalance}. Please add ${shortfall} to your wallet.`);
         }
         const vle = await _Vle.Vle.findOne({
-            userId: vleId
+            _id: id
         });
         if (!vle) {
             throw new Error("Something went wrong please try again!");
