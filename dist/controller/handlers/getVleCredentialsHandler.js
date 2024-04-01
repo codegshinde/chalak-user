@@ -50,6 +50,7 @@ const _Vle = require("../../models/Vle");
         // const randomVle = vleIdPassword[0];
         const password = btoa(vle.password);
         response.send({
+            id: vle._id,
             username: vle.userId,
             password: password
         });
