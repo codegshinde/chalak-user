@@ -25,5 +25,10 @@ async function getROutes(fastify) {
     fastify.get("/pocket/balance", _pocketBalanceHandler.pocketBalanceRouteOptions);
     fastify.get("/profile", _profileHandler.profileRouteOptions);
     fastify.get("/transactions/views", _getTransctionHandler.getUserTransactionRouteOptions);
+    fastify.get("/reload", async (req, rep)=>{
+        rep.send({
+            message: "reload"
+        });
+    });
 }
 const _default = (0, _fastifyplugin.default)(getROutes);

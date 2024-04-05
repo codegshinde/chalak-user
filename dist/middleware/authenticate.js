@@ -23,7 +23,8 @@ function _interop_require_default(obj) {
  */ async function authenticate(fastify) {
     // Define public routes that do not require authentication
     const publicRoutes = [
-        "/login"
+        "/login",
+        "/user/notification/upi"
     ];
     // Add preHandler hook to verify JWT for protected routes
     fastify.addHook("preHandler", async (request)=>{
