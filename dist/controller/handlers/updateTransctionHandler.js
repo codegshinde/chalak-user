@@ -67,7 +67,7 @@ async function updateTransactionHandler(request, response) {
  */ async function updateWalletBalance(amount, userId, type) {
     try {
         // Round the amount to two decimal places
-        const roundedAmount = Math.round(amount * 100) / 100;
+        const roundedAmount = Math.ceil(amount);
         // Determine the update query based on the transaction type
         const updateQuery = type === "debit" ? {
             $inc: {

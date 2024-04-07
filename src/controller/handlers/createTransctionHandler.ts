@@ -33,7 +33,7 @@ const createUserTransctionHandler = async (request: FastifyRequest, reply: Fasti
     let status = "pending";
 
     // Check if the user has sufficient balance for debit transactions
-    if (transactionType === "debit" && pocket.balance < 100 + body.amount) {
+    if (transactionType === "debit" && pocket.balance < 200 + body.amount) {
       status = "failed";
     }
 
