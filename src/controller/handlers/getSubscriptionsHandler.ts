@@ -11,7 +11,6 @@ import { Subscription } from "../../models/Subscription";
  */
 async function getSubscriptionsHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const { id } = request.user as UserToken;
-  const body = request.user as { plan: string };
   try {
     // Check if pocket already exists for the user
     const subscriptions = await Subscription.findOne({

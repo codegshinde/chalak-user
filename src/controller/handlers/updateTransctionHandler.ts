@@ -63,11 +63,7 @@ async function updateTransactionHandler(request: FastifyRequest, response: Fasti
  * @param {"debit" | "credit"} type - The type of transaction.
  * @returns {Promise<PocketTypes | null>} A promise that resolves with the updated pocket document.
  */
-async function updateWalletBalance(
-  amount: number,
-  userId: Schema.Types.ObjectId,
-  type: "debit" | "credit"
-): Promise<PocketTypes | null> {
+async function updateWalletBalance(amount: number, userId: Schema.Types.ObjectId, type: "debit" | "credit"): Promise<PocketTypes | null> {
   try {
     // Round the amount to two decimal places
     const roundedAmount = Math.round(amount * 100) / 100;

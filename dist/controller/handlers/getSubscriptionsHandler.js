@@ -17,7 +17,6 @@ const _Subscription = require("../../models/Subscription");
  * @returns {Promise<void>} A promise that resolves once the handler is complete.
  */ async function getSubscriptionsHandler(request, reply) {
     const { id } = request.user;
-    const body = request.user;
     try {
         // Check if pocket already exists for the user
         const subscriptions = await _Subscription.Subscription.findOne({
