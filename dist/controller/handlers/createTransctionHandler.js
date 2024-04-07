@@ -21,6 +21,7 @@ const _createTransactionSchema = require("../schema/createTransactionSchema");
     try {
         const { id } = request.user;
         const body = request.body;
+        const roundedAmount = Math.ceil(body.amount);
         // Check if a transaction with the same orderId already exists
         const existingTransaction = await _Transaction.Transaction.findOne({
             orderId: body.orderId
@@ -39,7 +40,7 @@ const _createTransactionSchema = require("../schema/createTransactionSchema");
         const transactionType = body.serviceId ? "debit" : "credit";
         let status = "pending";
         // Check if the user has sufficient balance for debit transactions
-        if (transactionType === "debit" && pocket.balance < 200 + body.amount) {
+        if (transactionType === "debit" && pocket.balance < 200 + roundedAmount) {
             status = "failed";
         }
         // Create a new transaction document

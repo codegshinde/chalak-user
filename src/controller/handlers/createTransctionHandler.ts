@@ -15,7 +15,7 @@ const createUserTransctionHandler = async (request: FastifyRequest, reply: Fasti
   try {
     const { id } = request.user as UserToken;
     const body = request.body as TransactionRouteBody;
-
+    const roundedAmount = Math.ceil(body.amount);
     // Check if a transaction with the same orderId already exists
     const existingTransaction = await Transaction.findOne({ orderId: body.orderId });
     if (existingTransaction) {
@@ -33,7 +33,7 @@ const createUserTransctionHandler = async (request: FastifyRequest, reply: Fasti
     let status = "pending";
 
     // Check if the user has sufficient balance for debit transactions
-    if (transactionType === "debit" && pocket.balance < 200 + body.amount) {
+    if (transactionType === "debit" && pocket.balance < 200 + roundedAmount) {
       status = "failed";
     }
 
