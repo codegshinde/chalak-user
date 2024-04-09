@@ -21,10 +21,10 @@ const getTransactionHandler = async (request: FastifyRequest, reply: FastifyRepl
     const skipCount = (pageNumber - 1) * limitNumber;
 
     // Find transactions associated with the user ID with pagination
-    const transactions = await Transaction.find({ userId: id }).skip(skipCount).limit(limitNumber);
+    const transactions = await Transaction.find({ userId: id, status: "success" }).skip(skipCount).limit(limitNumber);
 
     // Count the total number of transactions for the user
-    const totalCount = await Transaction.countDocuments({ userId: id });
+    const totalCount = await Transaction.countDocuments({ userId: id, status: "success" });
     const totalPages = Math.ceil(totalCount / limitNumber);
 
     // If no transactions are found, throw an error

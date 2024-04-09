@@ -26,11 +26,13 @@ const _Transaction = require("../../models/Transaction");
         const skipCount = (pageNumber - 1) * limitNumber;
         // Find transactions associated with the user ID with pagination
         const transactions = await _Transaction.Transaction.find({
-            userId: id
+            userId: id,
+            status: "success"
         }).skip(skipCount).limit(limitNumber);
         // Count the total number of transactions for the user
         const totalCount = await _Transaction.Transaction.countDocuments({
-            userId: id
+            userId: id,
+            status: "success"
         });
         const totalPages = Math.ceil(totalCount / limitNumber);
         // If no transactions are found, throw an error
