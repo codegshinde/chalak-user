@@ -5,37 +5,35 @@ import { Subscription } from "../models/Subscription";
 
 /**
  * Plugin for authentication middleware.
- * Adds a preHandler hook to verify JWT tokens for protected routes.
+ * Adds a preHandler hook to verify JWT tokens for the protected route.
  *
  * @param fastify - The FastifyInstance to register the plugin.
  */
 async function recharge(fastify: FastifyInstance): Promise<void> {
-  // Define public routes that do not require authentication
-  const publicRoutes = ["/user/subscriptions/create"];
-  // Add preHandler hook to verify JWT for protected routes
+  // Define the secure route that requires authentication
+  const secureRoute = "/user/vle-credentials";
+
+  // Add preHandler hook to verify JWT for the protected route
   fastify.addHook("preHandler", async (request: FastifyRequest) => {
     try {
-      const user = request.user as UserToken;
-      // Skip authentication for public routes
-      if (
-        request.routeOptions &&
-        request.routeOptions.url &&
-        publicRoutes.includes(request.routeOptions.url)
-      ) {
-        return;
+      // Check if the current route is the secure route
+      if (request.routeOptions && request.routeOptions.url === secureRoute) {
+        const user = request.user as UserToken;
+
+        const subscriptionCheck = await Subscription.findOne({
+          userId: user.id,
+          endDate: { $gte: new Date() },
+        });
+
+        // Throw an error if the subscription is not active
+        if (!subscriptionCheck) {
+          throw new Error("Subscription is not active!");
+        }
       }
 
-      const subscriptionCheck = await Subscription.findOne({
-        userId: user.id,
-        endDate: { $gte: new Date() },
-      });
-
-      // Throw an error if auth headers are not provided
-      if (!subscriptionCheck) {
-        throw new Error("Subscription is not active!");
-      }
+      return;
     } catch (error) {
-      // Throw an error if JWT verification fails
+      // Throw an error if authentication fails
       throw error;
     }
   });
